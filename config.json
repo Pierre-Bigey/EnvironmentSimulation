@@ -1,0 +1,9 @@
+{
+    "background_color": [255, 255, 255],
+
+
+    "screen_width": 800,
+    "screen_height": 800,
+
+    "collision_grid_size": 10
+}
