@@ -5,7 +5,8 @@ def grid_collision_detection(sprites: [pygame.sprite.Sprite], grid_size: int):
     # Create a dictionary to store rectangles in each grid cell
     grid = {}
     for sprite in sprites:
-        grid_key = (sprite.rect.x // grid_size, sprite.rect.y // grid_size)
+        (x,y) = sprite.rect.center
+        grid_key = (x // grid_size, y // grid_size)
         if grid_key in grid:
             grid[grid_key].append(sprite)
         else:
