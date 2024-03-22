@@ -2,16 +2,14 @@ import math
 import random
 import pygame
 
-import GridCollisionDetection
-from configReader import ConfigReader
+from Utils.configReader import ConfigReader
 from living import Living
-from quadtree import QuadTreeService
 
 
 class Plant(Living):
     # Define class-level variables (fixed parameters)
-    plant_config_reader = ConfigReader("plant_config.json")
-    global_config_reader = ConfigReader("config.json")
+    plant_config_reader = ConfigReader("Configs/plant_config.json")
+    global_config_reader = ConfigReader("Configs/config.json")
 
     #Represents the minimum and maximum distance a new plant can be from the parent plant
     min_reproduction_distance = plant_config_reader.get_config("min_reproduction_distance")

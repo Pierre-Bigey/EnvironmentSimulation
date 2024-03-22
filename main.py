@@ -1,16 +1,16 @@
 import pygame
 import random
 
-import GridCollisionDetection
+from Utils import GridCollisionDetection
 # from carnivore import Carnivore
-from configReader import ConfigReader
+from Utils.configReader import ConfigReader
 # from herbivore import Herbivore
 from plant import Plant
 
 import matplotlib.pyplot as plt  # Import Matplotlib
 import numpy as np  # Import NumPy
 
-config_reader = ConfigReader("config.json")
+config_reader = ConfigReader("Configs/config.json")
 
 # Set up the screen dimensions from the config file
 SCREEN_WIDTH = config_reader.get_config("screen_width")
