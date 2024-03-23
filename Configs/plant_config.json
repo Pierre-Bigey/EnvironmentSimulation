@@ -8,5 +8,6 @@
     "life_expectancy": 1000,
     "max_nutriment" : 10,
     "min_nutriment": 2,
-    "nutriment_multiplier": 10
+    "nutriment_multiplier": 10,
+    "max_plant": 1000
 }

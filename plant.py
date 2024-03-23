@@ -30,7 +30,11 @@ class Plant(Living):
 
     nutriment_multiplier = plant_config_reader.get_config("nutriment_multiplier")
 
+    max_plant = plant_config_reader.get_config("max_plant")
+
     def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y):
+        if(len(all_plants) > Plant.max_plant):
+            return
         super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Plant.life_expectancy, Plant.reproductive_cooldown, Plant.mature_ratio,
                          Plant.old_ratio, Plant.min_reproduction_distance, Plant.max_reproduction_distance)
 

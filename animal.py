@@ -71,6 +71,16 @@ class Animal(Living):
                 if self.can_breed() and same.can_breed():
                     self.reproduce(same_class[0])
                     same_class[0].reproduce(self)
+                else:
+                    #Else apply a pullback force to avoid collision
+                    # print("PullBack force !")
+                    other_center = same.rect.center
+                    self_center = self.rect.center
+                    to_other = (other_center[0] - self_center[0], other_center[1] - self_center[1]) * 100
+                    self.x -= to_other[0]
+                    self.y -= to_other[1]
+                    self.rect.center = (self.x, self.y)
+
 
 
 

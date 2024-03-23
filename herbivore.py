@@ -61,7 +61,7 @@ class Herbivore(Animal):
     def find_nearest_plant(self):
         # print("finding nearest plant with all_plants: ", self.all_plants)
         # Calculate distances to all plants
-        distances = [(plant, math.sqrt((plant.x - self.x) ** 2 + (plant.y - self.y) ** 2)) for plant in self.all_plants]
+        distances = [(plant, math.sqrt((plant.x - self.x) ** 2 + (plant.y - self.y) ** 2)) for plant in self.all_plants if len(plant.groups()) <= 2]
 
         # Sort the distances and return the closest plant
         if distances:
@@ -92,18 +92,17 @@ class Herbivore(Animal):
             return None
 
     def reproduce(self, partner):
-        print("herbivore reproducing, id = ", id(self), " partner id = ", id(partner))
 
         new_x, new_y = super().reproduce(partner)
         # print("got new x and y: ", new_x, " ", new_y)
-
+        self.target_group.empty()
         if id(self) > id(partner):
-            self.target_group.empty()
+            # self.target_group.empty()
             return
 
-        self.target_group.empty()
 
-        print("herbivore can reproduce !!!")
+
+        #print("herbivore can reproduce !!!")
 
         Herbivore(self.all_sprites, self.all_plants, self.all_herbivores, self.all_carnivores, new_x, new_y)
 

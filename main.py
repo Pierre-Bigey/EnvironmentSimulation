@@ -33,11 +33,12 @@ fps_data = np.array([0])  # Store FPS data
 plant_count_data = np.array([0])  # Store plant count data
 herbivore_count_data = np.array([0])  # Store herbivore count data
 carnivore_count_data = np.array([0])  # Store herbivore count data
+call_to_colliderect_count_data = np.array([0])  # Store herbivore count data
 
 
 # Main function
 def main():
-    global plant_count_data, fps_data, herbivore_count_data, carnivore_count_data
+    global plant_count_data, fps_data, herbivore_count_data, carnivore_count_data, call_to_colliderect_count_data
 
     pygame.init()
 
@@ -73,9 +74,12 @@ def main():
             Carnivore(all_sprites, all_plants, all_herbivores, all_carnivores, x, y)
 
     def physics():
+        global call_to_colliderect_count_data
         # Collision detection
-        collisions = GridCollisionDetection.grid_collision_detection(all_sprites,
-                                                                     config_reader.get_config("collision_grid_size"))
+        collisions, call_to_collide_rect = GridCollisionDetection.grid_collision_detection(all_sprites,
+                                                                     config_reader.get_config("collision_grid_size"), screen)
+        call_to_colliderect_count_data = np.append(call_to_colliderect_count_data, call_to_collide_rect)
+
         for collision in collisions:
             sprite = collision[0]
             # Remove sprite from the collision list
@@ -88,7 +92,6 @@ def main():
 
     def graphics():
         # Clear the screen
-        screen.fill(BACKGROUND_COLOR)
 
         # Draw plants on the screen
         all_sprites.draw(screen)
@@ -139,9 +142,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        physics()
+        screen.fill(BACKGROUND_COLOR)
 
         update()
+
+        physics()
 
         graphics()
 
@@ -154,6 +159,7 @@ def main():
     plt.plot(plant_count_data, label="Plant Count")
     plt.plot(herbivore_count_data, label="Herbivore Count")
     plt.plot(carnivore_count_data, label="Carnivore Count")
+    plt.plot(call_to_colliderect_count_data, label="Call to collide rect")
     plt.legend()
     plt.show()
 
