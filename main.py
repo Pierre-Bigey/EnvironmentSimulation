@@ -4,10 +4,10 @@ import random
 from Utils import GridCollisionDetection
 # from carnivore import Carnivore
 from Utils.configReader import ConfigReader
-from carnivore import Carnivore
-from herbivore import Herbivore
+from Scripts.carnivore import Carnivore
+from Scripts.herbivore import Herbivore
 # from herbivore import Herbivore
-from plant import Plant
+from Scripts.plant import Plant
 
 import matplotlib.pyplot as plt  # Import Matplotlib
 import numpy as np  # Import NumPy

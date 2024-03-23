@@ -3,7 +3,7 @@ import random
 import pygame
 
 from Utils.configReader import ConfigReader
-from living import Living
+from Scripts.living import Living
 
 
 class Plant(Living):

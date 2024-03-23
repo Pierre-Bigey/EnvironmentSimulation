@@ -3,9 +3,9 @@ import random
 
 import pygame
 
+from Scripts.animal import Animal
 from Utils.configReader import ConfigReader
-from animal import *
-from herbivore import Herbivore  # Import Herbivore class instead of Plant
+from Scripts.herbivore import Herbivore  # Import Herbivore class instead of Plant
 
 
 class Carnivore(Animal):

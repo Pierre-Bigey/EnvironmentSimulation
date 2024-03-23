@@ -5,7 +5,7 @@ from enum import Enum
 
 import pygame.sprite
 
-from living import Living
+from Scripts.living import Living
 
 
 class Animal(Living):
