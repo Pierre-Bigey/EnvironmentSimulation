@@ -11,7 +11,8 @@ class Living(pygame.sprite.Sprite):
 
     global_config_reader = ConfigReader("Configs/config.json")
 
-    def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y, life_expectancy, reproductive_cooldown, mature_ratio, old_ratio,
+    def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y, life_expectancy,
+                 reproductive_cooldown, mature_ratio, old_ratio,
                  min_reproduction_distance, max_reproduction_distance):
         super().__init__(all_sprites)
 

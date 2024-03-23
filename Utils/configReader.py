@@ -1,5 +1,6 @@
 import json
 
+
 class ConfigReader:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -26,4 +27,3 @@ class ConfigReader:
                 nested_dict = self.config[first_key]
                 return nested_dict.get(second_key)
         return None
-

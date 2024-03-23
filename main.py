@@ -23,7 +23,7 @@ BACKGROUND_COLOR = config_reader.get_config("background_color")
 
 clock_speed = config_reader.get_config("clock_speed")
 
-#Get initial number of plants, herbivores and carnivores
+# Get initial number of plants, herbivores and carnivores
 initial_plants = config_reader.get_config("initial_plants")
 initial_herbivores = config_reader.get_config("initial_herbivores")
 initial_carnivores = config_reader.get_config("initial_carnivores")
@@ -33,12 +33,12 @@ fps_data = np.array([0])  # Store FPS data
 plant_count_data = np.array([0])  # Store plant count data
 herbivore_count_data = np.array([0])  # Store herbivore count data
 carnivore_count_data = np.array([0])  # Store herbivore count data
-call_to_colliderect_count_data = np.array([0])  # Store herbivore count data
+call_to_collide_count_data = np.array([0])  # Store herbivore count data
 
 
 # Main function
 def main():
-    global plant_count_data, fps_data, herbivore_count_data, carnivore_count_data, call_to_colliderect_count_data
+    global plant_count_data, fps_data, herbivore_count_data, carnivore_count_data, call_to_collide_count_data
 
     pygame.init()
 
@@ -52,7 +52,7 @@ def main():
         all_herbivores = pygame.sprite.Group()
         all_carnivores = pygame.sprite.Group()
 
-        #Initialize scale reference
+        # Initialize scale reference
         scale_reference = pygame.Rect(50, 50, 20, 20)
 
         # Spawn initial plants
@@ -67,18 +67,20 @@ def main():
             y = random.randint(0, SCREEN_HEIGHT)
             Herbivore(all_sprites, all_plants, all_herbivores, all_carnivores, x, y)
 
-        #Spawn initial carnivores
+        # Spawn initial carnivores
         for _ in range(initial_carnivores):
             x = random.randint(0, SCREEN_WIDTH)
             y = random.randint(0, SCREEN_HEIGHT)
             Carnivore(all_sprites, all_plants, all_herbivores, all_carnivores, x, y)
 
     def physics():
-        global call_to_colliderect_count_data
+        global call_to_collide_count_data
         # Collision detection
         collisions, call_to_collide_rect = GridCollisionDetection.grid_collision_detection(all_sprites,
-                                                                     config_reader.get_config("collision_grid_size"), screen)
-        call_to_colliderect_count_data = np.append(call_to_colliderect_count_data, call_to_collide_rect)
+                                                                                           config_reader.get_config(
+                                                                                               "collision_grid_size"),
+                                                                                           screen)
+        call_to_collide_count_data = np.append(call_to_collide_count_data, call_to_collide_rect)
 
         for collision in collisions:
             sprite = collision[0]
@@ -152,7 +154,7 @@ def main():
 
         clock.tick(clock_speed)
 
-        if(len(all_plants) ==0 and len(all_carnivores) == 0) or len(all_herbivores) == 0:
+        if (len(all_plants) == 0 and len(all_carnivores) == 0) or len(all_herbivores) == 0:
             running = False
 
     pygame.quit()
@@ -162,7 +164,7 @@ def main():
     plt.plot(plant_count_data, label="Plant Count")
     plt.plot(herbivore_count_data, label="Herbivore Count")
     plt.plot(carnivore_count_data, label="Carnivore Count")
-    # plt.plot(call_to_colliderect_count_data, label="Call to collide rect")
+    # plt.plot(call_to_collide_count_data, label="Call to collide rect")
     plt.legend()
     plt.show()
 

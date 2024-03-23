@@ -1,11 +1,8 @@
 import math
-import random
-
-import pygame
 
 from Scripts.animal import Animal
-from Utils.configReader import ConfigReader
 from Scripts.herbivore import Herbivore  # Import Herbivore class instead of Plant
+from Utils.configReader import ConfigReader
 
 
 class Carnivore(Animal):
@@ -25,13 +22,13 @@ class Carnivore(Animal):
     max_reproduction_distance = carnivore_config_reader.get_config("max_reproduction_distance")
 
     def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y):
-        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Carnivore.min_reproduction_distance,
-                         Carnivore.max_reproduction_distance, Carnivore.life_expectancy, Carnivore.reproductive_cooldown,
+        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y,
+                         Carnivore.min_reproduction_distance,
+                         Carnivore.max_reproduction_distance, Carnivore.life_expectancy,
+                         Carnivore.reproductive_cooldown,
                          Carnivore.mature_ratio, Carnivore.old_ratio, Carnivore.speed, Carnivore.initial_satiety,
                          Carnivore.min_satiety_to_search_for_food, Carnivore.min_satiety_to_breed)
 
-        print("carnivore created")
-        # Add more attributes as needed
         self.all_carnivores.add(self)
 
         self.classic_color = Carnivore.carnivore_config_reader.get_config("color")

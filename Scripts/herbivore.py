@@ -1,11 +1,6 @@
-import math
-import random
-
-import pygame
-
-from Utils.configReader import ConfigReader
 from Scripts.animal import *
 from Scripts.plant import Plant
+from Utils.configReader import ConfigReader
 
 
 class Herbivore(Animal):
@@ -25,13 +20,13 @@ class Herbivore(Animal):
     max_reproduction_distance = herbivore_config_reader.get_config("max_reproduction_distance")
 
     def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y):
-        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Herbivore.min_reproduction_distance,
-                         Herbivore.max_reproduction_distance, Herbivore.life_expectancy, Herbivore.reproductive_cooldown,
+        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y,
+                         Herbivore.min_reproduction_distance,
+                         Herbivore.max_reproduction_distance, Herbivore.life_expectancy,
+                         Herbivore.reproductive_cooldown,
                          Herbivore.mature_ratio, Herbivore.old_ratio, Herbivore.speed, Herbivore.initial_satiety,
                          Herbivore.min_satiety_to_search_for_food, Herbivore.min_satiety_to_breed)
 
-        print("herbivore created")
-        # Add more attributes as needed
         self.all_herbivores.add(self)
 
         self.classic_color = Herbivore.herbivore_config_reader.get_config("color")
@@ -40,28 +35,29 @@ class Herbivore(Animal):
     def collide(self, colliders):
         super().collide(colliders)
         # print("herbivore collided with: ", colliders)
-        #Get plants from colliders
+        # Get plants from colliders
         plants = [collider for collider in colliders if isinstance(collider, Plant)]
-        #Eat plants
+        # Eat plants
         for plant in plants:
             self.eat(plant)
 
     def update(self):
         super().update()
-        if(self.can_breed()):
+        if self.can_breed():
             self.image.fill(self.breeding_color)
         else:
             self.image.fill(self.classic_color)
 
     def search_for_food(self):
-        #print("searching for food with target group: ", self.target_group)
-        if not(self.target_group):
+        # print("searching for food with target group: ", self.target_group)
+        if not self.target_group:
             self.target_group.add(self.find_nearest_plant())
 
     def find_nearest_plant(self):
         # print("finding nearest plant with all_plants: ", self.all_plants)
         # Calculate distances to all plants
-        distances = [(plant, math.sqrt((plant.x - self.x) ** 2 + (plant.y - self.y) ** 2)) for plant in self.all_plants if len(plant.groups()) <= 2]
+        distances = [(plant, math.sqrt((plant.x - self.x) ** 2 + (plant.y - self.y) ** 2)) for plant in self.all_plants
+                     if len(plant.groups()) <= 2]
 
         # Sort the distances and return the closest plant
         if distances:
@@ -78,7 +74,7 @@ class Herbivore(Animal):
                 self.target_group.add(partner)
 
     def find_partner(self):
-        # Get a list of  all herbivors that are in search for partner
+        # Get a list of  all herbivores that are in search for partner
         possible_partners = [herbivore for herbivore in self.all_herbivores if
                              herbivore != self and herbivore.can_breed()
                              and len(herbivore.groups()) <= 4]
@@ -101,9 +97,7 @@ class Herbivore(Animal):
             # self.target_group.empty()
             return
 
-
-
-        #print("herbivore can reproduce !!!")
+        # print("herbivore can reproduce !!!")
 
         Herbivore(self.all_sprites, self.all_plants, self.all_herbivores, self.all_carnivores, new_x, new_y)
 
@@ -113,4 +107,3 @@ class Herbivore(Animal):
     def die(self):
         super().die()
         del self
-

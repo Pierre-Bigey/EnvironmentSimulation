@@ -1,15 +1,14 @@
-import math
 import random
+
 import pygame
 
-from Utils.configReader import ConfigReader
 from Scripts.living import Living
+from Utils.configReader import ConfigReader
 
 
 class Plant(Living):
     # Define class-level variables (fixed parameters)
     plant_config_reader = ConfigReader("Configs/plant_config.json")
-
 
     # Represents the minimum and maximum distance a new plant can be from the parent plant
     min_reproduction_distance = plant_config_reader.get_config("min_reproduction_distance")
@@ -33,9 +32,10 @@ class Plant(Living):
     max_plant = plant_config_reader.get_config("max_plant")
 
     def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y):
-        if(len(all_plants) > Plant.max_plant):
+        if len(all_plants) > Plant.max_plant:
             return
-        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Plant.life_expectancy, Plant.reproductive_cooldown, Plant.mature_ratio,
+        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Plant.life_expectancy,
+                         Plant.reproductive_cooldown, Plant.mature_ratio,
                          Plant.old_ratio, Plant.min_reproduction_distance, Plant.max_reproduction_distance)
 
         all_plants.add(self)
@@ -55,12 +55,14 @@ class Plant(Living):
         # if self.is_covered_by_50_percent():
         #     self.die()
 
-        # If the living is older enough, it can reproduce so it check with random and reproductive rate
-        if self.age >= self.mature_ratio * self.die_age and self.rounds_since_last_reproduction >= self.reproductive_cooldown:
+        # If the living is older enough, it can reproduce, so it check with random and reproductive rate
+        if (self.age >= self.mature_ratio * self.die_age
+                and self.rounds_since_last_reproduction >= self.reproductive_cooldown):
             self.reproduce()
 
     def grow(self):
-        new_size = int(self.nutriment_count * 1.5)  # Example: increase size by 10 pixels for each unit of nutrient count
+        new_size = int(
+            self.nutriment_count * 1.5)  # Example: increase size by 10 pixels for each unit of nutrient count
         self.image = pygame.transform.scale(self.image, (new_size, new_size))
         self.rect = self.image.get_rect(center=self.rect.center)
         self.image.fill(self.color)
@@ -78,7 +80,7 @@ class Plant(Living):
             self.nutriment_count = self.age * self.max_nutriment / (self.die_age * Plant.mature_ratio)
         elif self.age > self.die_age * Plant.old_ratio:
             self.nutriment_count = self.max_nutriment * (self.age / self.die_age - 1) / (Plant.old_ratio - 1)
-        else:  # It will decresase until reaching zero
+        else:  # It will decrease until reaching zero
             self.nutriment_count = self.max_nutriment
         self.nutriment_count = max(Plant.min_nutriment, self.nutriment_count)
 
@@ -96,15 +98,15 @@ class Plant(Living):
     def is_covered_by_50_percent(self, collision_group):
 
         # Calculate the total area covered by other rectangles in the collision group
-        cliped_sprites = [sprite.rect.clip(self) for sprite in collision_group]
-        covered_area = sum(cliped_rect.width * cliped_rect.height for cliped_rect in cliped_sprites)
+        clipped_sprites = [sprite.rect.clip(self) for sprite in collision_group]
+        covered_area = sum(clipped_rect.width * clipped_rect.height for clipped_rect in clipped_sprites)
         total_area = self.rect.width * self.rect.height
 
         # Calculate coverage percentage
         coverage_percentage = (covered_area / total_area) * 100
 
         # Return True if coverage is >= 50%
-        if (coverage_percentage >= 50):
+        if coverage_percentage >= 50:
             self.die()
 
     def get_nutrient(self):
