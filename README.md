@@ -49,14 +49,17 @@ throughout the duration of the simulation.
 ### Screenshots
 
 #### Runs
-[![Example of run 1](Screenshots/run1.png)](Screenshots/run1.png)
-[![Example of run 2](Screenshots/run2.png)](Screenshots/run2.png)
-[![Example of run 3](Screenshots/run3.png)](Screenshots/run3.png)
-
+<p float="left">
+  <a href="Screenshots/run1.png"><img src="Screenshots/run1.png" width="400" /></a>
+  <a href="Screenshots/run2.png"><img src="Screenshots/run2.png" width="400" /></a> 
+  <a href="Screenshots/run3.png"><img src="Screenshots/run3.png" width="400" /></a>
+</p>
 #### Graphs
-[![Example of graph 1](Screenshots/graph1.png)](Screenshots/graph1.png)
-[![Example of graph 2](Screenshots/graph2.png)](Screenshots/graph2.png)
-[![Example of graph 3](Screenshots/graph3.png)](Screenshots/graph3.png)
+<p float="left">
+  <a href="Screenshots/graph1.png"><img src="Screenshots/graph1.png" width="400" /></a>
+  <a href="Screenshots/graph2.png"><img src="Screenshots/graph2.png" width="400" /></a> 
+  <a href="Screenshots/graph3.png"><img src="Screenshots/graph3.png" width="400" /></a>
+</p>
 
 
 ### Usage
