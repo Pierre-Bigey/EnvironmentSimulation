@@ -152,9 +152,7 @@ def main():
 
         clock.tick(clock_speed)
 
-        #Check if there is at least two types of livings :
-        number_of_species = [ 1 if len(all_plants) > 0 else 0, 1 if len(all_herbivores) > 0 else 0, 1 if len(all_carnivores) > 0 else 0]
-        if(sum(number_of_species) < 2):
+        if(len(all_plants) ==0 and len(all_carnivores) == 0) or len(all_herbivores) == 0:
             running = False
 
     pygame.quit()
@@ -164,7 +162,7 @@ def main():
     plt.plot(plant_count_data, label="Plant Count")
     plt.plot(herbivore_count_data, label="Herbivore Count")
     plt.plot(carnivore_count_data, label="Carnivore Count")
-    plt.plot(call_to_colliderect_count_data, label="Call to collide rect")
+    # plt.plot(call_to_colliderect_count_data, label="Call to collide rect")
     plt.legend()
     plt.show()
 

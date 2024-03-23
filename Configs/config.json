@@ -2,16 +2,16 @@
     "background_color": [255, 255, 255],
 
 
-    "screen_width": 1800,
-    "screen_height": 1020,
+    "screen_width": 1020,
+    "screen_height": 1000,
 
     "collision_grid_size": 15,
 
-    "clock_speed": 1000,
+    "clock_speed": 100,
 
     "initial_plants": 100,
-    "initial_herbivores": 20,
-    "initial_carnivores": 12,
+    "initial_herbivores": 15,
+    "initial_carnivores": 10,
 
     "show_grid": 0
 }
