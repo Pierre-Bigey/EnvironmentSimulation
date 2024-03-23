@@ -80,7 +80,7 @@ class Carnivore(Animal):
     def find_partner(self):
         # Get a list of all carnivores that are in search for partner
         possible_partners = [carnivore for carnivore in self.all_carnivores if
-                             carnivore != self and isinstance(carnivore.state, SearchingForPartnerState)]
+                             carnivore != self and carnivore.can_breed() and len(carnivore.groups()) <= 2]
         # Calculate the distance to all possible partners
         distances = [(carnivore, math.sqrt((carnivore.x - self.x) ** 2 + (carnivore.y - self.y) ** 2)) for carnivore in
                      possible_partners]

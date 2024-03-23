@@ -80,7 +80,8 @@ class Herbivore(Animal):
     def find_partner(self):
         # Get a list of  all herbivors that are in search for partner
         possible_partners = [herbivore for herbivore in self.all_herbivores if
-                             herbivore != self and isinstance(herbivore.state, SearchingForPartnerState)]
+                             herbivore != self and herbivore.can_breed()
+                             and len(herbivore.groups()) <= 4]
         # calculate the distance to all possible partners
         distances = [(herbivore, math.sqrt((herbivore.x - self.x) ** 2 + (herbivore.y - self.y) ** 2)) for herbivore in
                      possible_partners]
