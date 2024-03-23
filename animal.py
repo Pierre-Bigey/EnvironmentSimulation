@@ -3,34 +3,40 @@ import random
 from abc import abstractmethod
 from enum import Enum
 
+import pygame.sprite
+
 from living import Living
 
 
 class Animal(Living):
 
-    class State(Enum):
-        SEARCHING_FOR_FOOD = 1
-        SEARCHING_FOR_PARTNER = 2
+    # Class of the state searching for food
 
-    initial_satiety = 1000
-    min_satiety_to_breed = 400
-    min_satiety_to_search_for_food = 100
+    def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y, min_reproduction_distance,
+                 max_reproduction_distance, life_expectancy, reproductive_cooldown, mature_ratio, old_ratio, given_speed,
+                 initial_satiety, min_satiety_to_search_for_food, min_satiety_to_breed, ):
+        super().__init__( all_sprites, all_plants, all_herbivores, all_carnivores, x, y, life_expectancy,
+                          reproductive_cooldown, mature_ratio, old_ratio, min_reproduction_distance, max_reproduction_distance)
 
-    def __init__(self, x, y, life_expectancy, reproductive_cooldown, reproductive_age, reproductive_rate, given_speed):
-        super().__init__(x, y, life_expectancy, reproductive_cooldown, reproductive_age, reproductive_rate)
+        self.all_plants = all_plants
+        self.all_herbivores = all_herbivores
+        self.all_carnivores = all_carnivores
 
-        #print the creation of the animal with its parameters
-        print("Animal created with x {}, y {}, life_expectancy {}, reproductive_cooldown {}, reproductive_age {}, reproductive_rate {}, given_speed {}".format(x, y, life_expectancy, reproductive_cooldown, reproductive_age, reproductive_rate, given_speed))
+        self.min_reproduction_distance = min_reproduction_distance
+        self.max_reproduction_distance = max_reproduction_distance
 
         self.speed = random.uniform(0.8, 1.1) * given_speed
 
-        self.satiety = Animal.initial_satiety  # Initial satiety level (can be adjusted)
+        self.satiety = initial_satiety  # Initial satiety level (can be adjusted)
+        self.min_satiety_to_search_for_food = min_satiety_to_search_for_food
+        self.min_satiety_to_breed = min_satiety_to_breed
 
-        self.state = Animal.State.SEARCHING_FOR_FOOD
+        self.state = SearchingForFoodState(self)
 
-        self.target = None
+        self.target_group = pygame.sprite.GroupSingle()
 
-        self.partner_target = None
+        # Set a rectangle of 15px
+        self.image = pygame.Surface((15, 15))
 
 
     def move(self, destination):
@@ -53,26 +59,31 @@ class Animal(Living):
         # Update the position of the animal's sprite
         self.rect.center = (self.x, self.y)
 
+    def collide(self, colliders):
+        # Check if some same class are present in the colliders
+        #print("my class is : ", self.__class__)
+        #print("colliding with : ", [collider.__class__ for collider in colliders])
+        same_class = [collider for collider in colliders if isinstance(collider, self.__class__)]
+        if same_class:
+            # print("collided with same class : ", same_class)
+            for same in same_class:
+                #print("can breed : ", same.can_breed())
+                if self.can_breed() and same.can_breed():
+                    self.reproduce(same_class[0])
+                    same_class[0].reproduce(self)
+
+
+
     def eat(self, food):
         nutriment = food.get_nutrient()
         self.satiety += nutriment  # Example: Increase satiety by the nutriment value of the food
         food.die()  # Remove the food from the sprite group
-        self.target = None
         pass
-
 
     def reproduce(self, partner):
-        self.rounds_since_last_reproduction = 0
+        # print("animal reproduce")
 
-        pass
-
-
-    def die(self):
-        super().die()
-        #Show nutriment and satiety when animal die
-        print("animal die, satiety {}, age {}, die age {} ".format(self.satiety, self.age, self.die_age))
-        # Implement death behavior
-        pass
+        return super().reproduce()
 
     def update(self):
         super().update()
@@ -84,24 +95,12 @@ class Animal(Living):
         if self.satiety <= 0:
             # If satiety level is zero or below, the animal dies due to hunger
             self.die()
+            return
 
-        elif self.satiety <= Animal.min_satiety_to_search_for_food:
-            # If satiety level is below 50, the animal searches for food
-            self.state = Animal.State.SEARCHING_FOR_FOOD
+        self.state = self.state.process()
 
-        elif self.age >= self.reproductive_age and self.rounds_since_last_reproduction >= self.reproductive_cooldown and self.satiety >= Animal.min_satiety_to_breed:
-            # If the animal is old enough and ready to reproduce, it searches for a partner
-            self.state = Animal.State.SEARCHING_FOR_PARTNER
-
-        else:
-            # Otherwise, the animal continues its regular behavior
-            self.state = Animal.State.SEARCHING_FOR_FOOD
-
-        if(self.state == Animal.State.SEARCHING_FOR_FOOD):
-            self.search_for_food()
-        elif(self.state == Animal.State.SEARCHING_FOR_PARTNER):
-            self.search_for_partner()
-
+        if(self.target_group):
+            self.move((self.target_group.sprite.x, self.target_group.sprite.y))
 
     def search_for_food(self):
         # Implement searching for food behavior for animals
@@ -110,3 +109,120 @@ class Animal(Living):
     def search_for_partner(self):
         # Implement searching for a partner behavior for animals
         pass
+
+    def can_breed(self):
+        return (self.age >= self.mature_ratio*self.die_age and
+                self.rounds_since_last_reproduction >= self.reproductive_cooldown and
+                self.satiety >= self.min_satiety_to_breed)
+
+    def do_need_to_search_for_food(self):
+        return self.satiety <= self.min_satiety_to_search_for_food
+
+    def die(self):
+        super().die()
+        pass
+
+
+class State:
+    class Event(Enum):
+        START = 1
+        UPDATE = 2
+        EXIT = 3
+
+    class STATE(Enum):
+        SEARCHING_FOR_FOOD = 1
+        SEARCHING_FOR_PARTNER = 2
+
+    def __init__(self, state: STATE, animal: Animal):
+        self.animal = animal
+        self.stage = State.Event.START
+        self.name = state
+        self.next_state = None
+        pass
+
+    def start(self):
+        self.stage = State.Event.UPDATE
+        pass
+
+    def update(self):
+        self.stage = State.Event.UPDATE
+        pass
+
+    def exit(self):
+        self.stage = State.Event.EXIT
+        pass
+
+    def process(self):
+        if self.stage == State.Event.START:
+            self.start()
+        elif self.stage == State.Event.UPDATE:
+            self.update()
+        elif self.stage == State.Event.EXIT:
+            self.exit()
+            return self.next_state
+        return self
+
+class SearchingForFoodState(State):
+
+    def __init__(self, animal: Animal):
+        super().__init__(State.STATE.SEARCHING_FOR_FOOD, animal)
+        pass
+
+    def start(self):
+        super().start()
+        self.next_state = SearchingForPartnerState(self.animal)
+        self.animal.search_for_food()
+
+    def update(self):
+        super().update()
+
+        #Check if it should go search for bread
+        if self.animal.can_breed():
+            self.stage = State.Event.EXIT
+            return
+
+        #Check if target is still alive
+        if not self.animal.target_group:
+            self.stage = State.Event.START
+            return
+
+
+    def exit(self):
+        super().exit()
+        pass
+
+
+class SearchingForPartnerState(State):
+
+    def __init__(self, animal: Animal):
+        super().__init__(State.STATE.SEARCHING_FOR_PARTNER, animal)
+
+        pass
+
+    def start(self):
+        # print("GO Searching for partner !")
+        super().start()
+        self.next_state = SearchingForFoodState(self.animal)
+        self.animal.search_for_partner()
+
+    def update(self):
+        super().update()
+
+        #Check if it should go search for food
+        if not self.animal.can_breed() or self.animal.do_need_to_search_for_food():
+            self.stage = State.Event.EXIT
+            return
+
+        #Check if target is still alive
+        if not self.animal.target_group:
+            self.stage = State.Event.START
+            return
+
+        #Check if target still wants to breed
+        if not self.animal.target_group.sprite.do_need_to_search_for_food:
+            self.stage = State.Event.START
+            return
+
+    def exit(self):
+        super().exit()
+

@@ -1,0 +1,22 @@
+{
+    "color": [255, 0, 0],
+    "breeding_color": [255, 187, 187],
+    "reproductive_cooldown": 600,
+    "mature_ratio": 0.2,
+    "old_ratio": 0.9,
+    "life_expectancy": 3500,
+    "min_nutriment" : 10,
+    "max_nutriment" : 1000,
+    "speed": 0.7,
+    "initial_satiety": 1000,
+    "min_satiety_to_breed": 400,
+    "min_satiety_to_search_for_food": 100,
+    "min_reproduction_distance": 10,
+    "max_reproduction_distance": 20
+}
+
+
+
+
+
+

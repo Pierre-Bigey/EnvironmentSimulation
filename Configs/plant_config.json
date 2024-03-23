@@ -1,13 +1,12 @@
 {
     "color": [0, 255, 0],
-    "min_reproduction_distance": 10,
-    "max_reproduction_distance": 40,
-    "age_ratio_until_nutriment_decrease": 0.8,
+    "min_reproduction_distance": 20,
+    "max_reproduction_distance": 50,
     "reproductive_cooldown": 100,
     "mature_ratio": 0.2,
     "old_ratio": 0.9,
     "life_expectancy": 1000,
     "max_nutriment" : 10,
-    "minimum_nutriment": 2,
+    "min_nutriment": 2,
     "nutriment_multiplier": 10
 }

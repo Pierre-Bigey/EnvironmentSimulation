@@ -3,45 +3,63 @@ import random
 
 import pygame
 
-from animal import Animal
+from Utils.configReader import ConfigReader
+from animal import *
 from plant import Plant
 
 
 class Herbivore(Animal):
-    reproductive_rate = 30
-    reproductive_age = 1000
-    reproductive_cooldown = 500
-    life_expectancy = 5000
-    speed = 0.8
+    herbivore_config_reader = ConfigReader("Configs/herbivore_config.json")
+    # retrieving the values from the config file
+    reproductive_cooldown = herbivore_config_reader.get_config("reproductive_cooldown")
+    mature_ratio = herbivore_config_reader.get_config("mature_ratio")
+    old_ratio = herbivore_config_reader.get_config("old_ratio")
+    life_expectancy = herbivore_config_reader.get_config("life_expectancy")
+    min_nutriment = herbivore_config_reader.get_config("min_nutriment")
+    max_nutriment = herbivore_config_reader.get_config("max_nutriment")
+    speed = herbivore_config_reader.get_config("speed")
+    initial_satiety = herbivore_config_reader.get_config("initial_satiety")
+    min_satiety_to_search_for_food = herbivore_config_reader.get_config("min_satiety_to_search_for_food")
+    min_satiety_to_breed = herbivore_config_reader.get_config("min_satiety_to_breed")
+    min_reproduction_distance = herbivore_config_reader.get_config("min_reproduction_distance")
+    max_reproduction_distance = herbivore_config_reader.get_config("max_reproduction_distance")
 
-    def __init__(self, x, y, all_herbivores, all_plants):
-        super().__init__(x, y, Herbivore.life_expectancy, Herbivore.reproductive_cooldown, Herbivore.reproductive_age,
-                         Herbivore.reproductive_rate, Herbivore.speed)
+    def __init__(self, all_sprites, all_plants, all_herbivores, all_carnivores, x, y):
+        super().__init__(all_sprites, all_plants, all_herbivores, all_carnivores, x, y, Herbivore.min_reproduction_distance,
+                         Herbivore.max_reproduction_distance, Herbivore.life_expectancy, Herbivore.reproductive_cooldown,
+                         Herbivore.mature_ratio, Herbivore.old_ratio, Herbivore.speed, Herbivore.initial_satiety,
+                         Herbivore.min_satiety_to_search_for_food, Herbivore.min_satiety_to_breed)
 
-        self.all_herbivores = all_herbivores
-        self.all_plants = all_plants
-        self.target : Plant = None
-
-        # Set a rectangle of 15px
-        self.image = pygame.Surface((15, 15))
+        print("herbivore created")
         # Add more attributes as needed
+        self.all_herbivores.add(self)
 
-        self.color = self.config_reader.get_herbivore_color()
+        self.classic_color = Herbivore.herbivore_config_reader.get_config("color")
+        self.breeding_color = Herbivore.herbivore_config_reader.get_config("breeding_color")
+
+    def collide(self, colliders):
+        super().collide(colliders)
+        # print("herbivore collided with: ", colliders)
+        #Get plants from colliders
+        plants = [collider for collider in colliders if isinstance(collider, Plant)]
+        #Eat plants
+        for plant in plants:
+            self.eat(plant)
 
     def update(self):
         super().update()
-        self.image.fill(self.color)
+        if(self.can_breed()):
+            self.image.fill(self.breeding_color)
+        else:
+            self.image.fill(self.classic_color)
 
     def search_for_food(self):
-        if(self.target == None):
-            self.target = self.find_nearest_plant()
-        else:
-            self.move((self.target.x, self.target.y))
-            if self.rect.colliderect(self.target.rect):
-                self.eat(self.target)
-        pass
+        #print("searching for food with target group: ", self.target_group)
+        if not(self.target_group):
+            self.target_group.add(self.find_nearest_plant())
 
     def find_nearest_plant(self):
+        # print("finding nearest plant with all_plants: ", self.all_plants)
         # Calculate distances to all plants
         distances = [(plant, math.sqrt((plant.x - self.x) ** 2 + (plant.y - self.y) ** 2)) for plant in self.all_plants]
 
@@ -53,21 +71,19 @@ class Herbivore(Animal):
             return None
 
     def search_for_partner(self):
-        if(self.partner_target == None):
-            self.partner_target = self.find_partner()
-        else:
-            self.move((self.partner_target.x, self.partner_target.y))
-            if self.rect.colliderect(self.partner_target.rect):
-                self.reproduce(self.partner_target)
-                self.partner_target = None
-
-
+        if not self.target_group or not isinstance(self.target_group.sprite, Herbivore):
+            self.target_group.empty()
+            partner = self.find_partner()
+            if partner:
+                self.target_group.add(partner)
 
     def find_partner(self):
         # Get a list of  all herbivors that are in search for partner
-        possible_partners = [herbivore for herbivore in self.all_herbivores if herbivore != self and herbivore.state == Animal.State.SEARCHING_FOR_PARTNER]
-        #calculate the distance to all possible partners
-        distances = [(herbivore, math.sqrt((herbivore.x - self.x) ** 2 + (herbivore.y - self.y) ** 2)) for herbivore in possible_partners]
+        possible_partners = [herbivore for herbivore in self.all_herbivores if
+                             herbivore != self and isinstance(herbivore.state, SearchingForPartnerState)]
+        # calculate the distance to all possible partners
+        distances = [(herbivore, math.sqrt((herbivore.x - self.x) ** 2 + (herbivore.y - self.y) ** 2)) for herbivore in
+                     possible_partners]
         # Sort the distances and return the closest partner
         if distances:
             closest_partner, _ = min(distances, key=lambda x: x[1])
@@ -76,39 +92,25 @@ class Herbivore(Animal):
             return None
 
     def reproduce(self, partner):
-        super().reproduce(partner)
+        print("herbivore reproducing, id = ", id(self), " partner id = ", id(partner))
 
-        distance = random.uniform(5, 15)
+        new_x, new_y = super().reproduce(partner)
+        # print("got new x and y: ", new_x, " ", new_y)
 
-        # Generate random angle in radians
-        angle = random.uniform(0, 2 * math.pi)
+        if id(self) > id(partner):
+            self.target_group.empty()
+            return
 
-        # Calculate new_x and new_y using polar coordinates
-        new_x = self.x + distance * math.cos(angle)
-        new_y = self.y + distance * math.sin(angle)
-        # Check if the living is not out of screen border, else abort the creation
+        self.target_group.empty()
 
-        # Create a new instance of the plant with random position
-        self.instantiate_herbivore(new_x, new_y, self.all_herbivores, self.all_plants)
+        print("herbivore can reproduce !!!")
+
+        Herbivore(self.all_sprites, self.all_plants, self.all_herbivores, self.all_carnivores, new_x, new_y)
 
     def get_nutrient(self):
-        return self.satiety*1.2
-
+        return self.satiety * 1.2
 
     def die(self):
         super().die()
-        # Remove the plant from the sprite group
-        self.all_herbivores.remove(self)
-
-        # Free up any resources associated with the plant
         del self
-
-    @staticmethod
-    def instantiate_herbivore(x, y, all_herbivores, all_plants):
-        if (len(all_herbivores) > 200):
-            return None
-        herbivore = Herbivore(x, y, all_herbivores, all_plants)
-        all_herbivores.add(herbivore)
-        # QuadTreeService.get_instance().get_quadtree("plant").insert(plant)
-        return herbivore
 

@@ -5,5 +5,11 @@
     "screen_width": 800,
     "screen_height": 800,
 
-    "collision_grid_size": 10
+    "collision_grid_size": 15,
+
+    "clock_speed": 600,
+
+    "initial_plants": 20,
+    "initial_herbivores": 8,
+    "initial_carnivores": 4
 }
